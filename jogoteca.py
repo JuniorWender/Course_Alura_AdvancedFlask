@@ -1,30 +1,36 @@
 from flask import Flask, render_template, request, redirect, session, flash, url_for
 
-class Game:
-    def __init__(self, name, category, console):
-        self.name = name
-        self.category = category
-        self.console = console
-
-game1 = Game('Tetris', 'Puzzle', 'Super Nintendo')
-game2 = Game('Super Mario', 'Action', 'Super Nintendo')
-game3 = Game('Mortal Kombat', 'Fight', 'PS2')
-game4 = Game('Skyrim', 'RPG', 'PC')
-list = [game1, game2, game3,game4]
-
-class User:
-    def __init__(self, name, nickname, password):
-        self.name = name
-        self.nickname = nickname
-        self.password = password
-
-user1 = User('admin', 'o Admin', 'admin')
-user2 = User('user', 'usuario', 'user')
-users = {user1.name: user1, user2.name: user2}
-
+from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
-app.secret_key = 'criptografia'
+app.secret_key = 'crypto'
+
+app.config['SQLALCHEMY_DATABASE_URI'] = '{SGBD}://{user}:{password}@{server}/{database}'.format(
+    SGBD='mysql+mysqlconnector',
+    user='root',
+    password='root',
+    server='localhost',
+    database='jogoteca'
+)
+
+db = SQLAlchemy(app)
+
+class Games(db.Model):
+    id = db.column(db.Integer, primary_key=True, autoincrement=True),
+    name = db.column(db.String(50), nullable=False),
+    category = db.column(db.String(40), nullable=False),
+    plataform = db.column(db.String(20), nullable=False)
+
+    def __repr__(self):
+        return '<Name %r>' % self.name
+    
+class Users(db.Model):
+    nickname = db.column(db.String(10), primary_key=True),
+    name = db.column(db.String(20), nullable=False),
+    password = db.column(db.String(30), nullable=False)
+
+    def __repr__(self):
+        return '<Name %r>' % self.name
 
 # ------------------------------------------------- Pages ----------------------------------------------------------------
 @app.route('/')
