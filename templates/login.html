@@ -1,0 +1,12 @@
+{% extends "template.html" %}
+{% block content%}
+    <div class="container">
+        <form method="POST" action="{{ url_for('auth') }}">
+            <input type="hidden" name="next" value="{{ next }}"> <!-- next é uma variável do flask que indica a página que o usuário tentou acessar antes de ser redirecionado para a página de login. -->
+            <p><label>Nome de usuário:</label> <input class="form-control" type="text" name="user" required></p>
+            <p><label>Senha:</label> <input class="form-control" type="password" name="password" required></p>
+            <p><button class="btn btn-primary" type="submit">Entrar</button></p>
+            <button class="btn btn-primary"><a class="text-decoration-none text-light" href="{{ url_for('index') }}">Return</a></button>
+        </form>
+    </div>
+{% endblock %}
