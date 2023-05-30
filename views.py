@@ -1,9 +1,9 @@
-from flask import render_template, request, redirect, session, flash, url_for
+from flask import render_template, request, redirect, session, flash, url_for, send_from_directory
 
 from jogoteca import app, db
 
-from models import Games
-from models.Users import Users
+from Games import Games
+from Users import Users
 
 # ------------------------------------------------- Pages Routes ----------------------------------------------------------------
 
@@ -17,6 +17,22 @@ def new():
     if 'logged_user' not in session or session['logged_user'] == None:
         return redirect(url_for('login', next=url_for('new'))) # quary string
     return render_template('register.html', title='Register A New Game')
+
+@app.route('/edit/<int:id>')
+def edit(id):
+    if 'logged_user' not in session or session['logged_user'] == None:
+        return redirect(url_for('login', next=url_for('edit'))) # quary string
+    editGame = Games.query.filter_by(id=id).first()
+    return render_template('edit.html', title='Edit {} '.format(editGame.name), editGame=editGame)
+
+@app.route('/delete/<int:id>')
+def delete(id):
+    if 'logged_user' not in session or session['logged_user'] == None:
+        return redirect(url_for('login')) 
+    Games.query.filter_by(id=id).delete()
+    db.session.commit()
+    flash('Game deleted successfully!')
+    return redirect(url_for('index'))
 
 @app.route('/login')
 def login():
@@ -42,8 +58,25 @@ def create():
     newGame = Games(name=name, category=category, plataform=plataform) # create a object with data for persist on db
     db.session.add(newGame) # add data on db
     db.session.commit() # persist data on db
+
+    file = request.files['imgFile'] # catch the image file
+
+    upload_path = app.config['UPLOAD_PATH'] # catch the path of the folder img
+
+    file.save(f'{upload_path}/{newGame.name}.jpg') # save the image on folder img with the id of the game
+
     return redirect(url_for('index'))
 
+@app.route('/update', methods=['POST'])
+def update():
+    databaseGame = Games.query.filter_by(id=request.form['id']).first()
+    databaseGame.name = request.form['name']
+    databaseGame.category = request.form['category']
+    databaseGame.plataform = request.form['plataform']
+
+    db.session.add(databaseGame)
+    db.session.commit()
+    return redirect(url_for('index'))
 
 @app.route('/auth', methods=['POST'])
 def auth():
@@ -64,3 +97,7 @@ def logout():
     session['logged_user'] = None # clear the session
     flash('No user logged!') # throw a message for user
     return redirect(url_for('index'))
+
+@app.route('/upload/<file_name>')
+def image(file_name):
+    return send_from_directory('upload', file_name) # return the image for the page

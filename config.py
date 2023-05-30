@@ -1,3 +1,4 @@
+import os
 
 SECRET_KEY = 'crypto'
 
@@ -8,3 +9,5 @@ SQLALCHEMY_DATABASE_URI = '{SGBD}://{user}:{password}@{server}/{database}'.forma
     server='localhost',
     database='jogoteca'
 )
+
+UPLOAD_PATH = os.path.dirname(os.path.abspath(__file__)) + '/upload'
