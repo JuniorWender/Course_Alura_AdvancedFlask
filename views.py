@@ -4,6 +4,7 @@ from jogoteca import app, db
 
 from Games import Games
 from Users import Users
+from helpers import recovery_Image
 
 # ------------------------------------------------- Pages Routes ----------------------------------------------------------------
 
@@ -16,14 +17,16 @@ def index():
 def new():
     if 'logged_user' not in session or session['logged_user'] == None:
         return redirect(url_for('login', next=url_for('new'))) # quary string
-    return render_template('register.html', title='Register A New Game')
+    return render_template('create.html', title='create A New Game')
 
 @app.route('/edit/<int:id>')
 def edit(id):
     if 'logged_user' not in session or session['logged_user'] == None:
         return redirect(url_for('login', next=url_for('edit'))) # quary string
     editGame = Games.query.filter_by(id=id).first()
-    return render_template('edit.html', title='Edit {} '.format(editGame.name), editGame=editGame)
+    editGame.img = recovery_Image(editGame.id) # call the function to recovery the game image
+
+    return render_template('edit.html', title='Edit {} '.format(editGame.name), editGame=editGame, gameCover=editGame.img )
 
 @app.route('/delete/<int:id>')
 def delete(id):
@@ -63,7 +66,7 @@ def create():
 
     upload_path = app.config['UPLOAD_PATH'] # catch the path of the folder img
 
-    file.save(f'{upload_path}/{newGame.name}.jpg') # save the image on folder img with the id of the game
+    file.save(f'{upload_path}/gameCover_{newGame.id}.jpg') # save the image on folder img with the id of the game
 
     return redirect(url_for('index'))
 
@@ -76,6 +79,13 @@ def update():
 
     db.session.add(databaseGame)
     db.session.commit()
+
+    file = request.files['imgFile'] # catch the image file
+
+    upload_path = app.config['UPLOAD_PATH'] # catch the path of the folder img
+
+    file.save(f'{upload_path}/gameCover_{databaseGame.id}.jpg') # save the image on folder img with the id of the game
+
     return redirect(url_for('index'))
 
 @app.route('/auth', methods=['POST'])
@@ -98,6 +108,6 @@ def logout():
     flash('No user logged!') # throw a message for user
     return redirect(url_for('index'))
 
-@app.route('/upload/<file_name>')
-def image(file_name):
-    return send_from_directory('upload', file_name) # return the image for the page
+@app.route('/upload/<game_Cover>')
+def image(game_Cover):
+    return send_from_directory('upload', game_Cover) # return the image for the page
