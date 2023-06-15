@@ -1,8 +1,8 @@
 {% extends "template.html" %}
 {% block content%}
-      <form action="{{ url_for('create') }}" method="post" enctype="multipart/form-data">
+      <form class="formularioJogo" action="{{ url_for('create') }}" method="post" enctype="multipart/form-data">
 
-        <figure class="img-thumbnail col-md-4">
+        <figure class="img-thumbnail col-md-4 formularioImagem">
           <img class="img-fluid" src="{{ url_for('image', game_Cover='GameCover_Default.jpg') }}">
           <figcaption>
             <label class="fileContainer">
@@ -14,21 +14,21 @@
 
         <fieldset>
           {{ form.csrf_token() }}
-          <div class="form-group mt-2">
+          <div class="form-group inputBox">
            {{ form.name.label(class="form-label") }}
            {{ form.name(class="form-control") }}
           </div>
-          <div class="form-group">
+          <div class="form-group inputBox">
             {{ form.category.label(class="form-label") }}
             {{ form.category(class="form-control") }}
           </div>
-          <div class="form-group">
+          <div class="form-group inputBox">
             {{ form.category.label(class="form-label") }}
             {{ form.plataform(class="form-control") }}
           </div>
-          <div class="mt-3 d-flex gap-4">
+          <div class="buttons">
             {{ form.save(class="btn btn-primary") }}
-            <button class="btn btn-primary"><a class="text-decoration-none text-light" href="{{ url_for('index') }}">Return</a></button>
+            <button class="btn btn-danger"><a class="text-decoration-none text-light" href="{{ url_for('index') }}">Return</a></button>
           </div>
         </fieldset>
       </form>

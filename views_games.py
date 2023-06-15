@@ -2,10 +2,9 @@ from flask import render_template, request, redirect, session, flash, url_for, s
 import time
 
 from jogoteca import app, db
+from helpers import recovery_Image, deleta_arquivo, GameForm
 
 from Games import Games
-from Users import Users
-from helpers import recovery_Image, deleta_arquivo, GameForm
 
 # ------------------------------------------------- Pages Routes ----------------------------------------------------------------
 
@@ -44,12 +43,6 @@ def delete(id):
     db.session.commit()
     flash('Game deleted successfully!')
     return redirect(url_for('index'))
-
-@app.route('/login')
-def login():
-    nextPage = request.args.get('next') # catch the value on quary string
-    return render_template('login.html', next=nextPage , title='Login')
-
 
 # ------------------------------------------------- Methods Routes ----------------------------------------------------------------
 
@@ -107,25 +100,6 @@ def update():
 
     return redirect(url_for('index'))
 
-@app.route('/auth', methods=['POST'])
-def auth():
-    loginUser = Users.query.filter_by(nickname=request.form['user']).first() # Verify if the user exists on db bring the nickname
-    if loginUser: # if alredy exists verify the password
-        if request.form['password'] == loginUser.password: # if the password is correct, log the user
-            session['logged_user'] = loginUser.name # Save the user name on session
-            flash(loginUser.name + ' Logged successfully!') # throw a message for user
-            nextPage = request.form['next'] # catch the value on quary string for redirect to the page that the user was
-            return redirect(nextPage)
-    else:
-        flash('Invalid user or password! Try again!') # throw a message for user
-        return redirect(url_for('login'))
-    
-
-@app.route('/logout')
-def logout():
-    session['logged_user'] = None # clear the session
-    flash('No user logged!') # throw a message for user
-    return redirect(url_for('index'))
 
 @app.route('/upload/<game_Cover>')
 def image(game_Cover):

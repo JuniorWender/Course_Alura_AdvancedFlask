@@ -1,13 +1,18 @@
 import os
 from jogoteca import app
 from flask_wtf import FlaskForm
-from wtforms import StringField, validators,SubmitField
+from wtforms import StringField, validators, SubmitField, PasswordField
 
 class GameForm(FlaskForm):
     name = StringField('name', [validators.DataRequired(), validators.length(min=1, max=50)])
     category = StringField('category', [validators.DataRequired(), validators.length(min=1, max=40)])
     plataform = StringField('plataform', [validators.DataRequired(), validators.length(min=1, max=20)])
     save = SubmitField('save')
+
+class UserForm(FlaskForm):
+    username = StringField('username', [validators.DataRequired(), validators.length(min=1, max=20)])
+    password = PasswordField('password', [validators.DataRequired(), validators.length(min=1, max=100)])
+    login = SubmitField('Login')
 
 # ------------------------------------------------- Functions ----------------------------------------------------------------
 

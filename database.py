@@ -1,5 +1,6 @@
 import mysql.connector
 from mysql.connector import errorcode
+from flask_bcrypt import generate_password_hash
 
 print("Conecting...")
 try:
@@ -37,7 +38,7 @@ TABLES['Users'] = ('''
       CREATE TABLE `users` (
       `name` varchar(20) NOT NULL,
       `nickname` varchar(10) NOT NULL,
-      `password` varchar(30) NOT NULL,
+      `password` varchar(100) NOT NULL,
       PRIMARY KEY (`nickname`)
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;''')
 
@@ -57,8 +58,8 @@ for tabela_nome in TABLES:
 # insert Users
 user_sql = 'INSERT INTO users (name, nickname, password) VALUES (%s, %s, %s)'
 users = [
-      ("admin", "o admin", "admin"),
-      ("user", "usuario", "user")
+      ("admin", "o admin", generate_password_hash("admin").decode('utf-8')),
+      ("user", "usuario", generate_password_hash("user").decode('utf-8'))
 ]
 cursor.executemany(user_sql, users)
 
