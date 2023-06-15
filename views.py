@@ -1,10 +1,11 @@
 from flask import render_template, request, redirect, session, flash, url_for, send_from_directory
+import time
 
 from jogoteca import app, db
 
 from Games import Games
 from Users import Users
-from helpers import recovery_Image
+from helpers import recovery_Image, deleta_arquivo
 
 # ------------------------------------------------- Pages Routes ----------------------------------------------------------------
 
@@ -65,8 +66,9 @@ def create():
     file = request.files['imgFile'] # catch the image file
 
     upload_path = app.config['UPLOAD_PATH'] # catch the path of the folder img
+    timestamp = time.time() # catch the timestamp for rename the image
 
-    file.save(f'{upload_path}/gameCover_{newGame.id}.jpg') # save the image on folder img with the id of the game
+    file.save(f'{upload_path}/gameCover_{newGame.id}-{timestamp}.jpg') # save the image on folder img with the id of the game
 
     return redirect(url_for('index'))
 
@@ -83,8 +85,10 @@ def update():
     file = request.files['imgFile'] # catch the image file
 
     upload_path = app.config['UPLOAD_PATH'] # catch the path of the folder img
+    timestamp = time.time() # catch the timestamp for rename the image
+    deleta_arquivo(databaseGame.id)
 
-    file.save(f'{upload_path}/gameCover_{databaseGame.id}.jpg') # save the image on folder img with the id of the game
+    file.save(f'{upload_path}/gameCover_{databaseGame.id}-{timestamp}.jpg') # save the image on folder img with the id of the game
 
     return redirect(url_for('index'))
 
