@@ -13,23 +13,24 @@
         </figure>
 
         <fieldset>
-            <input type="hidden" name="id" value="{{editGame.id}}">
-          <div class="form-group">
-            <label for="nome">Name</label>
-            <input type="text" id="nome" name="name" class="form-control" value="{{editGame.name}}">
-          </div>
-          <div class="form-group">
-            <label for="categoria">Category</label>
-            <input type="text" id="categoria" name="category" class="form-control" value="{{editGame.category}}">
-          </div>
-          <div class="form-group">
-            <label for="console">Plataform</label>
-            <input type="text" id="console" name="plataform" class="form-control" value="{{editGame.plataform}}">
-          </div>
-          <div class="mt-3 d-flex gap-4">
-            <button type="submit" class="btn btn-success btn-salvar">Save</button>
-            <button class="btn btn-primary"><a class="text-decoration-none text-light" href="{{ url_for('index') }}">Return</a></button>
-          </div>
+          <input type="hidden" name="id" value="{{id}}">
+          {{ form.csrf_token() }}
+          <div class="form-group mt-2">
+            {{ form.name.label(class="form-label") }}
+            {{ form.name(class="form-control") }}
+            </div>
+            <div class="form-group">
+              {{ form.category.label(class="form-label") }}
+              {{ form.category(class="form-control") }}
+            </div>
+            <div class="form-group">
+              {{ form.category.label(class="form-label") }}
+              {{ form.plataform(class="form-control") }}
+            </div>
+            <div class="mt-3 d-flex gap-4">
+              {{ form.save(class="btn btn-primary") }}
+              <button class="btn btn-primary"><a class="text-decoration-none text-light" href="{{ url_for('index') }}">Return</a></button>
+            </div>
         </fieldset>
       </form>
     </div>

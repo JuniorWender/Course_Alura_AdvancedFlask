@@ -1,6 +1,11 @@
 {% extends "template.html" %}
 {% block content%}
-        <button type="button" class="btn btn-primary btn-novo "><a href="{{ url_for('new') }}" class="text-decoration-none text-light"> New Game </a></button>
+        <div class="d-flex justify-content-end gap-4">
+            <button type="button" class="btn btn-primary btn-novo "><a href="{{ url_for('new') }}" class="text-decoration-none text-light"> New Game </a></button>
+
+            <button type="button" class="btn btn-danger"><a href="{{ url_for('logout') }}" class="text-decoration-none text-light"> logout </a></button>
+            <button type="button" class="btn btn-primary"><a href="{{ url_for('login') }}" class="text-decoration-none text-light"> Login</a></button>
+        </div>
         <table class="table table-striped table-responsive table-bordered mt-4">
             <thead class="thead-default">
                 <tr>

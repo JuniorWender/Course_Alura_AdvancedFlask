@@ -5,7 +5,7 @@ from jogoteca import app, db
 
 from Games import Games
 from Users import Users
-from helpers import recovery_Image, deleta_arquivo
+from helpers import recovery_Image, deleta_arquivo, GameForm
 
 # ------------------------------------------------- Pages Routes ----------------------------------------------------------------
 
@@ -18,16 +18,23 @@ def index():
 def new():
     if 'logged_user' not in session or session['logged_user'] == None:
         return redirect(url_for('login', next=url_for('new'))) # quary string
-    return render_template('create.html', title='create A New Game')
+    form = GameForm()
+    return render_template('create.html', title='create A New Game', form=form)
 
 @app.route('/edit/<int:id>')
 def edit(id):
     if 'logged_user' not in session or session['logged_user'] == None:
         return redirect(url_for('login', next=url_for('edit'))) # quary string
     editGame = Games.query.filter_by(id=id).first()
+
+    form = GameForm() # create a form object
+    form.name.data = editGame.name # set the data of the form
+    form.category.data = editGame.category # set the data of the form
+    form.plataform.data = editGame.plataform # set the data of the form
+
     editGame.img = recovery_Image(editGame.id) # call the function to recovery the game image
 
-    return render_template('edit.html', title='Edit {} '.format(editGame.name), editGame=editGame, gameCover=editGame.img )
+    return render_template('edit.html', title='Edit {} '.format(editGame.name), id=id, gameCover=editGame.img, form=form )
 
 @app.route('/delete/<int:id>')
 def delete(id):
@@ -48,9 +55,14 @@ def login():
 
 @app.route('/create', methods=['POST'])
 def create():
-    name = request.form['name']
-    category = request.form['category']
-    plataform = request.form['plataform']
+    form = GameForm(request.form) # catch the data of the form
+
+    if not form.validate_on_submit(): # verify if the form is valid
+        return redirect(url_for('new'))
+    
+    name = form.name.data
+    category = form.category.data
+    plataform = form.plataform.data
     game = Games.query.filter_by(name=name).first() # verify if the game already exists
 
     if game:  # if exists, return to index
@@ -74,21 +86,24 @@ def create():
 
 @app.route('/update', methods=['POST'])
 def update():
-    databaseGame = Games.query.filter_by(id=request.form['id']).first()
-    databaseGame.name = request.form['name']
-    databaseGame.category = request.form['category']
-    databaseGame.plataform = request.form['plataform']
+    form = GameForm(request.form) # catch the data of the form
 
-    db.session.add(databaseGame)
-    db.session.commit()
+    if form.validate_on_submit(): # verify if the form is valid
+        databaseGame = Games.query.filter_by(id=request.form['id']).first()
+        databaseGame.name = form.name.data
+        databaseGame.category = form.category.data
+        databaseGame.plataform = form.plataform.data
 
-    file = request.files['imgFile'] # catch the image file
+        db.session.add(databaseGame)
+        db.session.commit()
 
-    upload_path = app.config['UPLOAD_PATH'] # catch the path of the folder img
-    timestamp = time.time() # catch the timestamp for rename the image
-    deleta_arquivo(databaseGame.id)
+        file = request.files['imgFile'] # catch the image file
 
-    file.save(f'{upload_path}/gameCover_{databaseGame.id}-{timestamp}.jpg') # save the image on folder img with the id of the game
+        upload_path = app.config['UPLOAD_PATH'] # catch the path of the folder img
+        timestamp = time.time() # catch the timestamp for rename the image
+        deleta_arquivo(databaseGame.id)
+
+        file.save(f'{upload_path}/gameCover_{databaseGame.id}-{timestamp}.jpg') # save the image on folder img with the id of the game
 
     return redirect(url_for('index'))
 
